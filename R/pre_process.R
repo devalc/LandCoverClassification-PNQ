@@ -32,17 +32,20 @@ beginCluster()
 meta1990 <- readMeta("D:/Chinmay/Pune/to_be_used_ldsat/LT05_L1TP_147047_19900318_20170131_01_T1/LT05_L1TP_147047_19900318_20170131_01_T1_MTL.txt")
 meta1999 <- readMeta("D:/Chinmay/Pune/to_be_used_ldsat/LT05_L1TP_147047_19990327_20161218_01_T1/LT05_L1TP_147047_19990327_20161218_01_T1_MTL.txt")
 meta2017 <- readMeta("D:/Chinmay/Pune/to_be_used_ldsat/LC08_L1TP_147047_20170328_20170414_01_T1/LC08_L1TP_147047_20170328_20170414_01_T1_MTL.txt")
+meta2019 <- readMeta("D:/Chinmay/Pune/to_be_used_ldsat/LC08_L1TP_147047_20190318_20190325_01_T1/LC08_L1TP_147047_20190318_20190325_01_T1_MTL.txt")
+
 
 summary(meta1990)
 summary(meta1999)
 summary(meta2017)
-
+summary(meta2019)
 
 ## stack bands along with the metadata
 
 TM1990 <- stackMeta(meta1990)
 TM1999 <- stackMeta(meta1999)
 OLI2017 <- stackMeta(meta2017)
+OLI2019 <- stackMeta(meta2019)
 
 ### clip to the area mask
 
@@ -62,6 +65,9 @@ TM1999_clip <- mask(TM1999_clip1, mask)
 OLI2017_clip1 <- crop(OLI2017, extent(mask))
 OLI2017_clip <- mask(OLI2017_clip1, mask)
 
+OLI2019_clip1 <- crop(OLI2019, extent(mask))
+OLI2019_clip <- mask(OLI2019_clip1, mask)
+
 ### convert to TOA Radiance values
 
 # TM1990_rad <- radCor(TM1990, meta1990, method = "rad")
@@ -80,13 +86,17 @@ OLI2017_clip <- mask(OLI2017_clip1, mask)
 TM1990_dos <- radCor(TM1990_clip, meta1990, method = "dos", darkProp = 0.01)
 TM1999_dos <- radCor(TM1999_clip, meta1999, method = "dos", darkProp = 0.01)
 OLI2017_dos <- radCor(OLI2017_clip, meta2017, method = "dos", darkProp = 0.01)
+OLI2019_dos <- radCor(OLI2019_clip, meta2019, method = "dos", darkProp = 0.01)
 
 ### Topographic correction
 
 TM1990_dos_topcor <-topCor(TM1990_dos, dem_clip, metaData = meta1990, method = "C")
 TM1999_dos_topcor <-topCor(TM1999_dos, dem_clip, metaData = meta1999, method = "C")
 OLI2017_dos_topcor <- topCor(OLI2017_dos, dem_clip, metaData = meta2017, method = "C")
+OLI2019_dos_topcor <- topCor(OLI2019_dos, dem_clip, metaData = meta2019, method = "C")
 
+### Calculate Spectral Indices
+# SI <- spectralIndices(TM1990_dos_topcor, blue = 1, green = 2, red = 3, nir = 4,swir2 = 5,swir3 = 7)
 
 ### Subset to RGBNIR bands
 # TM1990_sub <- TM1990_dos[[c(1:4)]]
@@ -95,12 +105,13 @@ OLI2017_dos_topcor <- topCor(OLI2017_dos, dem_clip, metaData = meta2017, method 
 
 ### write pre processed images to a raster file
 
-writeRaster(TM1990_dos_topcor, "preprocessed_TM1990_dos_topcor.TIF")
+writeRaster(TM1990_dos_topcor, "preprocessed_TM1990_dos_topcor.TIF", overwrite=TRUE)
 
-writeRaster(TM1999_dos_topcor, "preprocessed_TM1999_dos_topcor.TIF")
+writeRaster(TM1999_dos_topcor, "preprocessed_TM1999_dos_topcor.TIF", overwrite=TRUE)
 
-writeRaster(OLI2017_dos_topcor, "preprocessed_OLI2017_dos_topcor.TIF")
+writeRaster(OLI2017_dos_topcor, "preprocessed_OLI2017_dos_topcor.TIF", overwrite=TRUE)
 
+writeRaster(OLI2019_dos_topcor, "preprocessed_OLI2019_dos_topcor.TIF", overwrite=TRUE)
 #### Unsup Classification
 # # 
 # # set.seed(6)
