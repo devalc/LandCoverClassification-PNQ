@@ -96,7 +96,12 @@ OLI2017_dos_topcor <- topCor(OLI2017_dos, dem_clip, metaData = meta2017, method 
 OLI2019_dos_topcor <- topCor(OLI2019_dos, dem_clip, metaData = meta2019, method = "C")
 
 ### Calculate Spectral Indices
-# SI <- spectralIndices(TM1990_dos_topcor, blue = 1, green = 2, red = 3, nir = 4,swir2 = 5,swir3 = 7)
+# SI2019 <- spectralIndices(OLI2019_dos_topcor, blue = 2, green = 3, red = 4, nir = 5,swir2 = 6,swir3 = 7)
+# MNDWI <- SI2019[[7]]
+# NDVI <-
+# NDWI <-
+# NDBI_OLI <- function()
+# NDBaI <-
 
 ### Subset to RGBNIR bands
 # TM1990_sub <- TM1990_dos[[c(1:4)]]
@@ -112,19 +117,6 @@ writeRaster(TM1999_dos_topcor, "preprocessed_TM1999_dos_topcor.TIF", overwrite=T
 writeRaster(OLI2017_dos_topcor, "preprocessed_OLI2017_dos_topcor.TIF", overwrite=TRUE)
 
 writeRaster(OLI2019_dos_topcor, "preprocessed_OLI2019_dos_topcor.TIF", overwrite=TRUE)
-#### Unsup Classification
-# # 
-# # set.seed(6)
-# # TM1990_UC <- unsuperClass(TM1990_dos, nClasses = 5, norm = TRUE)
-# 
-# ### Kmeans classification
-# TM1990_sub_kmeans <- kmeans(na.omit(as.matrix(TM1990_sub)), centers = 5, iter.max = 100,
-#                             nstart = 10)
-# ## create empty raster of same specification as 
-# ### the input to kmeans.
-# TM1990_UC_kmeans <- raster(TM1990_clip)
-# 
-# ### write results of kmeans to the empty raster
-# TM1990_UC_kmeans[] <- TM1990_sub_kmeans$cluster
+
 
 endCluster()
