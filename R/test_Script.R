@@ -113,30 +113,30 @@ NDBaI22019 <- (OLI2019_dos_topcor[[6]] - OLI2019_dos_topcor[[10]]) /  (OLI2019_d
 # 
 # NDBI2019 <- ((PCB67$map[[1]] + PCB1011$map[[1]]) - OLI2019_dos_topcor[[5]])/((PCB67$map[[1]] + PCB1011$map[[1]]) + OLI2019_dos_topcor[[5]])
 
-writeRaster(SI1999[[7]], "MNDWI_1999.TIF", overwrite=TRUE)
-writeRaster(SI1999[[11]], "NDVI_1999.TIF", overwrite=TRUE)
-writeRaster(SI1999[[13]], "NDWI_1999.TIF", overwrite=TRUE)
-writeRaster(NDBI1999, "NDBI_1999.TIF", overwrite=TRUE)
-writeRaster(NDBaI1999, "NDBaI_1999.TIF", overwrite=TRUE)
+# writeRaster(SI1999[[7]], "MNDWI_1999.TIF", overwrite=TRUE)
+# writeRaster(SI1999[[11]], "NDVI_1999.TIF", overwrite=TRUE)
+# writeRaster(SI1999[[13]], "NDWI_1999.TIF", overwrite=TRUE)
+# writeRaster(NDBI1999, "NDBI_1999.TIF", overwrite=TRUE)
+# writeRaster(NDBaI1999, "NDBaI_1999.TIF", overwrite=TRUE)
 
 
-writeRaster(SI2019[[7]], "MNDWI_2019.TIF", overwrite=TRUE)
-writeRaster(SI2019[[11]], "NDVI_2019.TIF", overwrite=TRUE)
-writeRaster(SI2019[[13]], "NDWI_2019.TIF", overwrite=TRUE)
-writeRaster(NDBI2019, "NDBI_2019.TIF", overwrite=TRUE)
-writeRaster(NDBaI2019, "NDBaI_1999.TIF", overwrite=TRUE)
-writeRaster(NDBaI22019, "NDBaI_2019_2.TIF", overwrite=TRUE)
+# writeRaster(SI2019[[7]], "MNDWI_2019.TIF", overwrite=TRUE)
+# writeRaster(SI2019[[11]], "NDVI_2019.TIF", overwrite=TRUE)
+# writeRaster(SI2019[[13]], "NDWI_2019.TIF", overwrite=TRUE)
+# writeRaster(NDBI2019, "NDBI_2019.TIF", overwrite=TRUE)
+# writeRaster(NDBaI2019, "NDBaI_1999.TIF", overwrite=TRUE)
+# writeRaster(NDBaI22019, "NDBaI_2019_2.TIF", overwrite=TRUE)
 
 
 stackedIndices_1999 <- stack(SI1999[[7]], SI1999[[11]], SI1999[[13]],NDBI1999, NDBaI1999)
 names(stackedIndices_1999)[[4]] <- "NDBI"
 names(stackedIndices_1999)[[5]] <- "NDBaI"
-writeRaster(stackedIndices_1999, "stackedIndices_1999.TIF", overwrite=TRUE)
+# writeRaster(stackedIndices_1999, "stackedIndices_1999.TIF", overwrite=TRUE)
 
 stackedIndices_2019 <- stack(SI2019[[7]], SI2019[[11]], SI2019[[13]],NDBI2019, NDBaI22019)
 names(stackedIndices_2019)[[4]] <- "NDBI"
 names(stackedIndices_2019)[[5]] <- "NDBaI"
-writeRaster(stackedIndices_2019, "stackedIndices_2019.TIF", overwrite=TRUE)
+# writeRaster(stackedIndices_2019, "stackedIndices_2019.TIF", overwrite=TRUE)
 # MNDWI <- SI2019[[7]]
 # NDVI <-
 # NDWI <-
@@ -153,11 +153,58 @@ writeRaster(stackedIndices_2019, "stackedIndices_2019.TIF", overwrite=TRUE)
 
 # writeRaster(TM1990_dos_topcor, "preprocessed_TM1990_dos_topcor.TIF", overwrite=TRUE)
 
-# writeRaster(TM1999_dos_topcor, "preprocessed_TM1999_dos_topcor.TIF", overwrite=TRUE)
+# writeRaster(TM1999_dos_topcor, "preprocessed_TM1999_dos_topcor.TIF", format="GTiff")
 
 # writeRaster(OLI2017_dos_topcor, "preprocessed_OLI2017_dos_topcor.TIF", overwrite=TRUE)
 
-# writeRaster(OLI2019_dos_topcor, "preprocessed_OLI2019_dos_topcor.TIF", overwrite=TRUE)
+# writeRaster(OLI2019_dos_topcor, "preprocessed_OLI2019_dos_topcor.TIF", format="GTiff")
 
 
 endCluster()
+
+
+
+
+
+
+##############################LST#######################################
+
+# For calculating of surface temperature we use formula:
+
+# LST(°C)=Bt/[1+(w???Bt/p)???ln(e)]???273.15
+# Where:
+
+# Bt is At satellite temperature
+
+# w is wavelength of emitted radiance
+
+# p is h???c/s, where h is Planc's constant, c is velocity of light, s is Boltzmann constant. p is equal to 14388
+
+# e is electromagnetic emissivity. For urban areas I use formula from Stathopolou (2007):
+
+# e=0.017???PV+0.963
+# In formula of electromagnetic emissivity PV is "Proportion of Vegetation". For PV calculation is used the NDVI.
+# 
+# PV=[(NDVI???NDVImin)/(NDVImax???NDVImin)]2
+
+
+#########PV
+
+PV2019 <- ((stackedIndices_2019[[2]] - minValue(stackedIndices_2019[[2]])) / 
+             (maxValue(stackedIndices_2019[[2]]) + (minValue(stackedIndices_2019[[2]]))))^2
+plot(PV2019)
+
+PV1999 <- ((stackedIndices_1999[[2]] - minValue(stackedIndices_1999[[2]])) / 
+             (maxValue(stackedIndices_1999[[2]]) + (minValue(stackedIndices_1999[[2]]))))^2
+plot(PV1999)
+
+
+### emissivity
+
+emissiv2019 <- 0.017 * PV2019 + 0.963
+
+
+### LST
+
+LST2019 <- OLI2019_dos_topcor$B10_bt / 
+(1 + 10.8 * (OLI2019_dos_topcor$B10_bt/14388) * log(emissiv2019)) - 273.15
