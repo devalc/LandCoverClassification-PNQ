@@ -108,12 +108,12 @@ NDBI1999 <- (TM1999_dos_topcor[[5]] - TM1999_dos_topcor[[4]])/(TM1999_dos_topcor
 NDBaI1999 <-(TM1999_dos_topcor[[5]] - TM1999_dos_topcor[[6]])/(TM1999_dos_topcor[[5]] + TM1999_dos_topcor[[6]])
 
 SI2017 <- spectralIndices(OLI2017_dos_topcor, blue = 2, green = 3, red = 4, nir = 5,swir2 = 6,swir3 = 7)
-NDBI2017 <-(OLI2017_dos_topcor[[5]] - OLI2017_dos_topcor[[6]])/(OLI2017_dos_topcor[[5]] + OLI2017_dos_topcor[[6]])
+NDBI2017 <-(OLI2017_dos_topcor[[6]] - OLI2017_dos_topcor[[5]])/(OLI2017_dos_topcor[[6]] + OLI2017_dos_topcor[[5]])
 NDBaI2017 <- (OLI2017_dos_topcor[[6]] - OLI2017_dos_topcor[[9]]) /  (OLI2017_dos_topcor[[6]] + OLI2017_dos_topcor[[9]])
 NDBaI22017 <- (OLI2017_dos_topcor[[6]] - OLI2017_dos_topcor[[10]]) /  (OLI2017_dos_topcor[[6]] + OLI2017_dos_topcor[[10]])
   
 SI2019 <- spectralIndices(OLI2019_dos_topcor, blue = 2, green = 3, red = 4, nir = 5,swir2 = 6,swir3 = 7)
-NDBI2019 <-(OLI2019_dos_topcor[[5]] - OLI2019_dos_topcor[[6]])/(OLI2019_dos_topcor[[5]] + OLI2019_dos_topcor[[6]])
+NDBI2019 <-(OLI2019_dos_topcor[[6]] - OLI2019_dos_topcor[[5]])/(OLI2019_dos_topcor[[6]] + OLI2019_dos_topcor[[5]])
 NDBaI2019 <- (OLI2019_dos_topcor[[6]] - OLI2019_dos_topcor[[9]]) /  (OLI2019_dos_topcor[[6]] + OLI2019_dos_topcor[[9]])
 NDBaI22019 <- (OLI2019_dos_topcor[[6]] - OLI2019_dos_topcor[[10]]) /  (OLI2019_dos_topcor[[6]] + OLI2019_dos_topcor[[10]])
 # PCB67 <- rasterPCA(stack(OLI2019_dos_topcor[[6]],OLI2019_dos_topcor[[7]]))
@@ -258,6 +258,11 @@ endCluster()
 s <- stack(SI1990[[11]],SI1999[[11]],SI2017[[11]],SI2019[[11]])
 names(s) <- c("1990","1999", "2017", "2019")
 levelplot(s)
+
+s <- stack(NDBI1990, NDBI1999, NDBI2017, NDBI2019)
+names(s) <- c("1990","1999", "2017", "2019")
+plot(s)
+
 
 w <- stack(SI1990[[13]],SI1999[[13]],SI2017[[13]],SI2019[[13]])
 names(w) <- c("1990","1999", "2017", "2019")
